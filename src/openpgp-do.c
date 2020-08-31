@@ -41,9 +41,6 @@
 static void gpg_do_delete_prvkey (enum kind_of_key kk, int clean_page_full);
 static void gpg_reset_digital_signature_counter (void);
 
-#define PASSWORD_PW1_ERRORS_MAX 3 /* User errors */
-#define PASSWORD_PW3_ERRORS_MAX 5 /* Admin errors */
-#define PASSWORD_RC_ERRORS_MAX 10 /* Reset count errors */
 static const uint8_t *pw_err_counter_p[3];
 
 static int
@@ -644,10 +641,10 @@ const uint8_t openpgpcard_aid[] = {
   0x00, 0x01, 0x24,	    /* Registered Application Provider Identifier */
   0x01,			    /* Application: OpenPGPcard */
   0x02, 0x00,		    /* Version 2.0 */
-  /* v. id */ /*   serial number   */
+  /* vendor id */ /*   serial number   */
+  // bd:0e:de:ad:ca:11
 //  0xff, 0xff, 0xff, 0xff,  0xff, 0xff, /* To be overwritten */
-  0xbd, 0x0e, 0xde, 0xad,  0xca, 0x11, /* To be overwritten */
-//  0xf5, 0x17, 0xff, 0xff,  0xff, 0xff, /* To be overwritten */
+  0xbd, 0x0e, 0x0fa, 0x1c,  0xaf, 0xfe, /* To be overwritten */
 };
 
 static int

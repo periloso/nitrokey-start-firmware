@@ -51,6 +51,13 @@ prefix=/usr/local
 exec_prefix='${prefix}'
 libexecdir='${exec_prefix}/libexec'
 
+# Password management
+user_passwd_minlen=5
+admin_passwd_minlen=5
+password_pw1_errors_max=3
+password_pw3_errors_max=5
+password_rc_errors_max=10
+
 # Revision number
 if test -e ../.git; then
   if type git >/dev/null 2>&1; then
@@ -341,8 +348,7 @@ fi
 
 ### !!! Replace following string of "FSIJ" to yours !!! ####
 #SERIALNO="FSIJ-$(sed -e 's%^[^/]*/%%' <../VERSION)-"
-SERIALNO="bgNK-v.1-$(sed -e 's%^[^/]*/%%' <../VERSION)-"
-#SERIALNO="bgNK-$(sed -e 's%^[^/]*/%%' <../VERSION)"
+SERIALNO="bg-Gnuk v$(sed -e 's%^[^/]*/%%' <../VERSION)"
 
 SERIALNO_STR_LEN_DEFINE="#define SERIALNO_STR_LEN ${#SERIALNO}"
 
@@ -411,17 +417,10 @@ output_vendor_product_serial_strings () {
   if test -n "$name"; then
   echo
   echo "const uint8_t ${name}string_serial[] = {"
-  echo "  ${#SERIALNO}*2+2+16,                  /* bLength */"
+  echo "  ${#SERIALNO}*2+2,                  /* bLength */"
   echo "  STRING_DESCRIPTOR,            /* bDescriptorType */"
   echo "  /* Serial number: \"$SERIALNO\" */"
   echo "$SERIALNO" | sed -e "s/\(........\)/\1\\${nl}/g" | sed -n -e "s/\(.\)/'\1', 0, /g" -e "s/^/  /" -e "/^  ./s/ $//p"
-  if test "$emulation" = "yes"; then
-    echo "  'E', 0, 'M', 0, 'U', 0, 'L', 0,"
-    echo "  'A', 0, 'T', 0, 'E', 0, 'D', 0,"
-  else
-    echo "  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,"
-    echo "  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,"
-  fi
   echo '};'
   echo
   echo '#ifdef USB_STRINGS_FOR_GNUK'
@@ -472,6 +471,12 @@ if test "$sys1_compat" = "no"; then
 else
     use_sys3=""
 fi
+
+USER_PASSWD_MINLEN="#define USER_PASSWD_MINLEN $user_passwd_minlen"
+ADMIN_PASSWD_MINLEN="#define ADMIN_PASSWD_MINLEN $admin_passwd_minlen"
+PASSWORD_PW1_ERRORS_MAX="#define PASSWORD_PW1_ERRORS_MAX $password_pw1_errors_max"
+PASSWORD_PW3_ERRORS_MAX="#define PASSWORD_PW3_ERRORS_MAX $password_pw3_errors_max"
+PASSWORD_RC_ERRORS_MAX="#define PASSWORD_RC_ERRORS_MAX $password_rc_errors_max"
 
 
 (echo "CHIP=$chip";
@@ -524,5 +529,10 @@ sed -e "s/@DEBUG_DEFINE@/$DEBUG_DEFINE/" \
     -e "s/@LIFE_CYCLE_MANAGEMENT_DEFINE@/$LIFE_CYCLE_MANAGEMENT_DEFINE/" \
     -e "s/@ACKBTN_DEFINE@/$ACKBTN_DEFINE/" \
     -e "s/@SERIALNO_STR_LEN_DEFINE@/$SERIALNO_STR_LEN_DEFINE/" \
+    -e "s/@USER_PASSWD_MINLEN@/$USER_PASSWD_MINLEN/" \
+    -e "s/@ADMIN_PASSWD_MINLEN@/$ADMIN_PASSWD_MINLEN/" \
+    -e "s/@PASSWORD_PW1_ERRORS_MAX@/$PASSWORD_PW1_ERRORS_MAX/" \
+    -e "s/@PASSWORD_PW3_ERRORS_MAX@/$PASSWORD_PW3_ERRORS_MAX/" \
+    -e "s/@PASSWORD_RC_ERRORS_MAX@/$PASSWORD_RC_ERRORS_MAX/" \
 	< config.h.in > config.h
 exit 0
