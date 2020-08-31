@@ -54,7 +54,8 @@ libexecdir='${exec_prefix}/libexec'
 # Revision number
 if test -e ../.git; then
   if type git >/dev/null 2>&1; then
-     REVISION=$(git describe --dirty="-modified")
+#     REVISION=$(git describe --dirty="-modified")
+     REVISION=$(git describe)
   else
      # echo 'No git available, please install git'
      GIT_REVISION=$(sed -e 's/^\(.......\).*$/g\1/' "../.git/$(sed -e 's/^ref: //' ../.git/HEAD)")
@@ -63,6 +64,7 @@ if test -e ../.git; then
 else
   REVISION=$(cat ../VERSION)
 fi
+REVISION=$(cat ../VERSION)
 
 # Process each option
 for option; do
@@ -338,7 +340,9 @@ else
 fi
 
 ### !!! Replace following string of "FSIJ" to yours !!! ####
-SERIALNO="FSIJ-$(sed -e 's%^[^/]*/%%' <../VERSION)-"
+#SERIALNO="FSIJ-$(sed -e 's%^[^/]*/%%' <../VERSION)-"
+SERIALNO="bgNK-v.1-$(sed -e 's%^[^/]*/%%' <../VERSION)-"
+#SERIALNO="bgNK-$(sed -e 's%^[^/]*/%%' <../VERSION)"
 
 SERIALNO_STR_LEN_DEFINE="#define SERIALNO_STR_LEN ${#SERIALNO}"
 

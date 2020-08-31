@@ -1,0 +1,13 @@
+1. Run:
+openocd -f openocd.cfg
+
+2. In a different window, exec:
+telnet localhost 4444
+
+3. Write the following:
+reset halt
+stm32f1x mass_erase 0
+flash write_bank 0 /home/periloso/nitrokey-start-firmware/src/build/gnuk.bin 0
+reset halt
+exit
+

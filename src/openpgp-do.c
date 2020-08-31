@@ -41,7 +41,9 @@
 static void gpg_do_delete_prvkey (enum kind_of_key kk, int clean_page_full);
 static void gpg_reset_digital_signature_counter (void);
 
-#define PASSWORD_ERRORS_MAX 3	/* >= errors, it will be locked */
+#define PASSWORD_PW1_ERRORS_MAX 3 /* User errors */
+#define PASSWORD_PW3_ERRORS_MAX 5 /* Admin errors */
+#define PASSWORD_RC_ERRORS_MAX 10 /* Reset count errors */
 static const uint8_t *pw_err_counter_p[3];
 
 static int
@@ -54,20 +56,23 @@ int
 gpg_pw_get_retry_counter (int who)
 {
   if (who == 0x81 || who == 0x82)
-    return PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW1);
+    return PASSWORD_PW1_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW1);
   else if (who == 0x83)
-    return PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW3);
+    return PASSWORD_PW3_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW3);
   else
-    return PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_RC);
+    return PASSWORD_RC_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_RC);
 }
 
 int
 gpg_pw_locked (uint8_t which)
 {
-  if (gpg_pw_get_err_counter (which) >= PASSWORD_ERRORS_MAX)
-    return 1;
-  else
-    return 0;
+  if (which == PW_ERR_PW1)
+    return (gpg_pw_get_err_counter (which) >= PASSWORD_PW1_ERRORS_MAX) ? 1 : 0;
+  if (which == PW_ERR_PW3)
+    return (gpg_pw_get_err_counter (which) >= PASSWORD_PW3_ERRORS_MAX) ? 1 : 0;
+  if (which == PW_ERR_RC)
+    return (gpg_pw_get_err_counter (which) >= PASSWORD_RC_ERRORS_MAX) ? 1 : 0;
+  return 0;
 }
 
 void
@@ -640,7 +645,9 @@ const uint8_t openpgpcard_aid[] = {
   0x01,			    /* Application: OpenPGPcard */
   0x02, 0x00,		    /* Version 2.0 */
   /* v. id */ /*   serial number   */
-  0xff, 0xff, 0xff, 0xff,  0xff, 0xff, /* To be overwritten */
+//  0xff, 0xff, 0xff, 0xff,  0xff, 0xff, /* To be overwritten */
+  0xbd, 0x0e, 0xde, 0xad,  0xca, 0x11, /* To be overwritten */
+//  0xf5, 0x17, 0xff, 0xff,  0xff, 0xff, /* To be overwritten */
 };
 
 static int
@@ -737,9 +744,9 @@ rw_pw_status (uint16_t tag, int with_tag,
       *res_p++ = PW_LEN_MAX;
       *res_p++ = PW_LEN_MAX;
       *res_p++ = PW_LEN_MAX;
-      *res_p++ = PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW1);
-      *res_p++ = PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_RC);
-      *res_p++ = PASSWORD_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW3);
+      *res_p++ = PASSWORD_PW1_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW1);
+      *res_p++ = PASSWORD_RC_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_RC);
+      *res_p++ = PASSWORD_PW3_ERRORS_MAX - gpg_pw_get_err_counter (PW_ERR_PW3);
       return 1;
     }
 }

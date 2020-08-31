@@ -6,7 +6,7 @@ Detailed instructions below.
 
 #### Solution one (the fastest, Ubuntu 18.04+ and derivatives):
 ```bash
-sudo apt install python3-cffi python3-usb
+sudo apt install python3-cffi python3-usb libudev-dev libudev-dev:i386
 ```
 
 #### Solution two, using `pipenv` (for develoment, distribution agnostic):

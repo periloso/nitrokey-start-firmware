@@ -93,7 +93,7 @@ if __name__ == '__main__':
         fileid = 0              # serial number
         filename = sys.argv[2]
         f = open(filename)
-        email = os.environ['EMAIL']
+        email = os.environ.get('EMAIL','default@example.com')
         serial_data_hex = None
         for line in f.readlines():
             field = str.split(line)
